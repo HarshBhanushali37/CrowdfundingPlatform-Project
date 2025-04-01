@@ -5,9 +5,7 @@
 {% block extra_css %}
 <style>
     .hero-section {
-        background: url('{{ url_for('static', filename='images/happy_children.svg') }}') no-repeat center center;
-        background-size: cover;
-        color: #333;
+        background-color: rgba(33, 37, 41, 0.8);
         padding: 80px 0;
         margin-bottom: 3rem;
         border-radius: 0.5rem;
@@ -15,10 +13,10 @@
     }
     
     .hero-content {
-        background-color: rgba(255, 255, 255, 0.85);
         padding: 2rem;
         border-radius: 0.5rem;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        border: 1px solid rgba(255, 255, 255, 0.1);
     }
     
     .hero-title {

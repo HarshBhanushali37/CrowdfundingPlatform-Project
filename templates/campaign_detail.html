@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}{{ campaign.title }} - Bharat Anna NGO{% endblock %}
+{% block title %}{{ campaign.title }} - Sahyog{% endblock %}
 
 {% block extra_css %}
 <style>
@@ -21,15 +21,9 @@
         border-left: 4px solid var(--bs-primary);
     }
     
-    /* Add Indian flag colors to campaign title */
     .campaign-title {
-        background: linear-gradient(to right, #FF9933, #FFFFFF, #138808);
-        -webkit-background-clip: text;
-        background-clip: text;
-        color: transparent;
-        display: inline-block;
         font-weight: bold;
-        text-shadow: 1px 1px 1px rgba(0,0,0,0.1);
+        display: inline-block;
     }
 </style>
 {% endblock %}

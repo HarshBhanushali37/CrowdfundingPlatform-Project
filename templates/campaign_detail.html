@@ -53,7 +53,7 @@
         </div>
         
         <!-- Campaign Description -->
-        <div class="card mb-4 tricolor-border indian-border">
+        <div class="card mb-4">
             <div class="card-body">
                 <h4 class="card-title mb-3">About This Campaign</h4>
                 <p class="lead mb-3">{{ campaign.short_description }}</p>
@@ -64,7 +64,7 @@
         </div>
         
         <!-- Campaign Updates -->
-        <div class="card mb-4 tricolor-border">
+        <div class="card mb-4">
             <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
                 <h4 class="mb-0"><i class="fas fa-bell me-2"></i>Campaign Updates</h4>
                 {% if current_user.is_authenticated and (current_user.id == campaign.user_id or current_user.is_admin) %}
@@ -96,7 +96,7 @@
     <!-- Campaign Sidebar -->
     <div class="col-lg-4">
         <!-- Campaign Stats -->
-        <div class="card mb-4 indian-border">
+        <div class="card mb-4">
             <div class="card-body">
                 <!-- Progress -->
                 <div class="d-flex justify-content-between align-items-center mb-2">
@@ -151,7 +151,7 @@
         </div>
         
         <!-- Campaign Creator -->
-        <div class="card mb-4 tricolor-border">
+        <div class="card mb-4">
             <div class="card-header bg-primary text-white">
                 <h5 class="mb-0"><i class="fas fa-user-circle me-2"></i>Campaign Creator</h5>
             </div>
@@ -172,7 +172,7 @@
         </div>
         
         <!-- Recent Donors -->
-        <div class="card tricolor-border">
+        <div class="card">
             <div class="card-header bg-primary text-white">
                 <h5 class="mb-0"><i class="fas fa-heart me-2"></i>Recent Donors</h5>
             </div>

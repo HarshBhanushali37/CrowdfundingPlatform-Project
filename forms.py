@@ -39,7 +39,7 @@ class CampaignForm(FlaskForm):
     title = StringField('Campaign Title', validators=[DataRequired(), Length(min=5, max=120)])
     short_description = StringField('Short Description (Tagline)', validators=[DataRequired(), Length(max=250)])
     description = TextAreaField('Full Description', validators=[DataRequired()])
-    goal_amount = FloatField('Goal Amount ($)', validators=[DataRequired(), NumberRange(min=10)])
+    goal_amount = FloatField('Goal Amount (₹)', validators=[DataRequired(), NumberRange(min=1000)])
     category = SelectField('Category', choices=[
         ('emergency', 'Emergency Food Relief'),
         ('community', 'Community Food Programs'),
@@ -61,7 +61,7 @@ class CampaignForm(FlaskForm):
             raise ValidationError('End date must be within one year from now.')
 
 class DonationForm(FlaskForm):
-    amount = FloatField('Donation Amount ($)', validators=[DataRequired(), NumberRange(min=1)])
+    amount = FloatField('Donation Amount (₹)', validators=[DataRequired(), NumberRange(min=100)])
     comment = TextAreaField('Leave a Comment (Optional)', validators=[Optional(), Length(max=300)])
     anonymous = BooleanField('Make this donation anonymous')
     submit = SubmitField('Complete Donation')

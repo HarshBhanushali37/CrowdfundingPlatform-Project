@@ -1,9 +1,12 @@
-/* Custom Styles for FoodAid Platform */
+/* Custom Styles for Bharat Anna NGO Platform */
 
 /* Core styling overrides */
 :root {
-    --bs-primary: #28a745;
-    --bs-primary-rgb: 40, 167, 69;
+    --bs-primary: #FF6347; /* Tomato - represents the saffron color of Indian flag */
+    --bs-primary-rgb: 255, 99, 71;
+    --bs-secondary: #138808; /* Green from Indian flag */
+    --bs-secondary-rgb: 19, 136, 8;
+    --bs-accent: #000080; /* Navy Blue - from the Ashoka Chakra */
 }
 
 .btn-primary {
@@ -113,6 +116,41 @@
 .social-links a:hover {
     background-color: var(--bs-primary);
     color: #fff;
+}
+
+/* Indian-inspired styles */
+.indian-border {
+    border: 1px solid #FF9933; /* Saffron */
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(255, 153, 51, 0.2);
+}
+
+.btn-success {
+    background-color: var(--bs-secondary) !important;
+    border-color: var(--bs-secondary) !important;
+}
+
+.progress-bar.bg-success {
+    background-color: var(--bs-secondary) !important;
+}
+
+.tricolor-border {
+    position: relative;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.tricolor-border::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(to right, 
+        #FF9933 0%, #FF9933 33%, 
+        #FFFFFF 33%, #FFFFFF 66%, 
+        #138808 66%, #138808 100%);
 }
 
 /* Responsive fixes */

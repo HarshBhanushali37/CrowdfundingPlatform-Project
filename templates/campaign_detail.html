@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}{{ campaign.title }} - FoodAid{% endblock %}
+{% block title %}{{ campaign.title }} - Bharat Anna NGO{% endblock %}
 
 {% block extra_css %}
 <style>
@@ -11,13 +11,25 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        background-color: var(--bs-primary);
+        background-color: var(--bs-secondary);
         color: #fff;
         font-weight: bold;
+        border: 2px solid var(--bs-primary);
     }
     
     .update-card {
         border-left: 4px solid var(--bs-primary);
+    }
+    
+    /* Add Indian flag colors to campaign title */
+    .campaign-title {
+        background: linear-gradient(to right, #FF9933, #FFFFFF, #138808);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        display: inline-block;
+        font-weight: bold;
+        text-shadow: 1px 1px 1px rgba(0,0,0,0.1);
     }
 </style>
 {% endblock %}
@@ -32,7 +44,7 @@
 <div class="row">
     <!-- Campaign Main Content -->
     <div class="col-lg-8">
-        <h1 class="mb-3">{{ campaign.title }}</h1>
+        <h1 class="mb-3 campaign-title">{{ campaign.title }}</h1>
         
         <!-- Campaign Category and Location -->
         <div class="d-flex align-items-center mb-4">
@@ -41,7 +53,7 @@
         </div>
         
         <!-- Campaign Description -->
-        <div class="card mb-4">
+        <div class="card mb-4 tricolor-border indian-border">
             <div class="card-body">
                 <h4 class="card-title mb-3">About This Campaign</h4>
                 <p class="lead mb-3">{{ campaign.short_description }}</p>
@@ -52,9 +64,9 @@
         </div>
         
         <!-- Campaign Updates -->
-        <div class="card mb-4">
+        <div class="card mb-4 tricolor-border">
             <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-                <h4 class="mb-0">Campaign Updates</h4>
+                <h4 class="mb-0"><i class="fas fa-bell me-2"></i>Campaign Updates</h4>
                 {% if current_user.is_authenticated and (current_user.id == campaign.user_id or current_user.is_admin) %}
                 <a href="{{ url_for('add_update', id=campaign.id) }}" class="btn btn-sm btn-light">
                     <i class="fas fa-plus me-1"></i> Post Update
@@ -84,12 +96,12 @@
     <!-- Campaign Sidebar -->
     <div class="col-lg-4">
         <!-- Campaign Stats -->
-        <div class="card mb-4">
+        <div class="card mb-4 indian-border">
             <div class="card-body">
                 <!-- Progress -->
                 <div class="d-flex justify-content-between align-items-center mb-2">
-                    <h3>${{ "%.2f"|format(campaign.current_amount) }}</h3>
-                    <span class="text-muted">raised of ${{ "%.2f"|format(campaign.goal_amount) }} goal</span>
+                    <h3 class="text-primary">₹{{ "%.2f"|format(campaign.current_amount) }}</h3>
+                    <span class="text-muted">raised of ₹{{ "%.2f"|format(campaign.goal_amount) }} goal</span>
                 </div>
                 <div class="progress mb-3" style="height: 10px;">
                     <div class="progress-bar bg-success" role="progressbar" style="width: {{ campaign.progress() }}%;" 
@@ -139,9 +151,9 @@
         </div>
         
         <!-- Campaign Creator -->
-        <div class="card mb-4">
+        <div class="card mb-4 tricolor-border">
             <div class="card-header bg-primary text-white">
-                <h5 class="mb-0">Campaign Creator</h5>
+                <h5 class="mb-0"><i class="fas fa-user-circle me-2"></i>Campaign Creator</h5>
             </div>
             <div class="card-body">
                 <div class="d-flex align-items-center">
@@ -160,9 +172,9 @@
         </div>
         
         <!-- Recent Donors -->
-        <div class="card">
+        <div class="card tricolor-border">
             <div class="card-header bg-primary text-white">
-                <h5 class="mb-0">Recent Donors</h5>
+                <h5 class="mb-0"><i class="fas fa-heart me-2"></i>Recent Donors</h5>
             </div>
             <div class="card-body">
                 {% if donors %}
@@ -178,7 +190,7 @@
                         </div>
                         <div>
                             <h6 class="mb-0">{% if donor.anonymous %}Anonymous{% else %}{{ donor.user.get_full_name() }}{% endif %}</h6>
-                            <p class="mb-0 text-muted">${{ "%.2f"|format(donor.amount) }} • {{ donor.created_at.strftime('%b %d, %Y') }}</p>
+                            <p class="mb-0 text-muted">₹{{ "%.2f"|format(donor.amount) }} • {{ donor.created_at.strftime('%b %d, %Y') }}</p>
                             {% if donor.comment %}
                             <p class="mb-0 small mt-1 fst-italic">"{{ donor.comment }}"</p>
                             {% endif %}

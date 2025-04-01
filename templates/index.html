@@ -1,20 +1,52 @@
 {% extends "base.html" %}
 
-{% block title %}FoodAid - Crowdfunding for Food Relief{% endblock %}
+{% block title %}Bharat Anna NGO - Crowdfunding for Food Relief{% endblock %}
+
+{% block extra_css %}
+<style>
+    .hero-section {
+        background: url('{{ url_for('static', filename='images/happy_children.svg') }}') no-repeat center center;
+        background-size: cover;
+        color: #333;
+        padding: 80px 0;
+        margin-bottom: 3rem;
+        border-radius: 0.5rem;
+        position: relative;
+    }
+    
+    .hero-content {
+        background-color: rgba(255, 255, 255, 0.85);
+        padding: 2rem;
+        border-radius: 0.5rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    
+    .hero-title {
+        color: #FF6347;
+        font-weight: bold;
+    }
+</style>
+{% endblock %}
 
 {% block content %}
 <!-- Hero Section -->
-<div class="bg-primary text-white text-center py-5 mb-5 rounded-3">
+<div class="hero-section mb-5 rounded-3">
     <div class="container">
-        <h1 class="display-4">Feed the Future</h1>
-        <p class="lead">Support food aid projects that make a difference in communities around the world.</p>
-        <div class="d-grid gap-2 d-md-flex justify-content-md-center mt-4">
-            <a href="{{ url_for('campaigns') }}" class="btn btn-light btn-lg px-4 me-md-2">Explore Campaigns</a>
-            {% if current_user.is_authenticated %}
-            <a href="{{ url_for('create_campaign') }}" class="btn btn-outline-light btn-lg px-4">Start a Campaign</a>
-            {% else %}
-            <a href="{{ url_for('register') }}" class="btn btn-outline-light btn-lg px-4">Join Now</a>
-            {% endif %}
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="hero-content text-center">
+                    <h1 class="display-4 hero-title">भारत अन्न - Feed the Future</h1>
+                    <p class="lead">Support food aid projects that make a difference in communities across India.</p>
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-center mt-4">
+                        <a href="{{ url_for('campaigns') }}" class="btn btn-primary btn-lg px-4 me-md-2">Explore Campaigns</a>
+                        {% if current_user.is_authenticated %}
+                        <a href="{{ url_for('create_campaign') }}" class="btn btn-outline-primary btn-lg px-4">Start a Campaign</a>
+                        {% else %}
+                        <a href="{{ url_for('register') }}" class="btn btn-outline-primary btn-lg px-4">Join Now</a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
@@ -157,7 +189,7 @@
                 <p>Food Aid Projects</p>
             </div>
             <div class="col-md-4 mb-3 mb-md-0">
-                <h3 class="display-4">$2M+</h3>
+                <h3 class="display-4">₹15Cr+</h3>
                 <p>Funds Raised</p>
             </div>
             <div class="col-md-4">
@@ -171,7 +203,7 @@
 <!-- Get Involved CTA -->
 <div class="text-center my-5">
     <h2 class="mb-3">Ready to Make a Difference?</h2>
-    <p class="lead mb-4">Join our community of changemakers fighting hunger around the world.</p>
+    <p class="lead mb-4">Join our community of changemakers fighting hunger across India.</p>
     {% if current_user.is_authenticated %}
     <a href="{{ url_for('create_campaign') }}" class="btn btn-primary btn-lg">Start Your Campaign</a>
     {% else %}

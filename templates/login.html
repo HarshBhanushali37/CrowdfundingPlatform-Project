@@ -1,13 +1,13 @@
 {% extends "base.html" %}
 
-{% block title %}Login - FoodAid{% endblock %}
+{% block title %}Login - Bharat Anna NGO{% endblock %}
 
 {% block content %}
 <div class="row justify-content-center">
     <div class="col-md-6">
-        <div class="card">
+        <div class="card tricolor-border indian-border">
             <div class="card-header bg-primary text-white">
-                <h3 class="card-title mb-0">Log In</h3>
+                <h3 class="card-title mb-0"><i class="fas fa-user-lock me-2"></i>Log In</h3>
             </div>
             <div class="card-body">
                 <form method="POST" action="{{ url_for('login') }}">

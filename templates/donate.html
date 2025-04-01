@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Donate to {{ campaign.title }} - FoodAid{% endblock %}
+{% block title %}Donate to {{ campaign.title }} - Bharat Anna NGO{% endblock %}
 
 {% block content %}
 <div class="row justify-content-center">
@@ -25,8 +25,8 @@
                                  aria-valuenow="{{ campaign.progress() }}" aria-valuemin="0" aria-valuemax="100"></div>
                         </div>
                         <div class="d-flex justify-content-between mb-3 small">
-                            <span>${{ "%.2f"|format(campaign.current_amount) }} raised</span>
-                            <span>{{ campaign.progress() }}% of ${{ "%.2f"|format(campaign.goal_amount) }}</span>
+                            <span>₹{{ "%.2f"|format(campaign.current_amount) }} raised</span>
+                            <span>{{ campaign.progress() }}% of ₹{{ "%.2f"|format(campaign.goal_amount) }}</span>
                         </div>
                     </div>
                     <div class="col-md-5">
@@ -53,16 +53,16 @@
                         <label class="form-label">Select Amount</label>
                         <div class="row">
                             <div class="col-6 col-md-3 mb-2">
-                                <button type="button" class="btn btn-outline-primary w-100 donation-amount" data-amount="10">$10</button>
+                                <button type="button" class="btn btn-outline-primary w-100 donation-amount" data-amount="500">₹500</button>
                             </div>
                             <div class="col-6 col-md-3 mb-2">
-                                <button type="button" class="btn btn-outline-primary w-100 donation-amount" data-amount="25">$25</button>
+                                <button type="button" class="btn btn-outline-primary w-100 donation-amount" data-amount="1000">₹1000</button>
                             </div>
                             <div class="col-6 col-md-3 mb-2">
-                                <button type="button" class="btn btn-outline-primary w-100 donation-amount" data-amount="50">$50</button>
+                                <button type="button" class="btn btn-outline-primary w-100 donation-amount" data-amount="2000">₹2000</button>
                             </div>
                             <div class="col-6 col-md-3 mb-2">
-                                <button type="button" class="btn btn-outline-primary w-100 donation-amount" data-amount="100">$100</button>
+                                <button type="button" class="btn btn-outline-primary w-100 donation-amount" data-amount="5000">₹5000</button>
                             </div>
                         </div>
                         
@@ -78,7 +78,7 @@
                             {% else %}
                                 {{ form.amount(class="form-control") }}
                             {% endif %}
-                            <div class="form-text">Enter a custom amount (minimum $1).</div>
+                            <div class="form-text">Enter a custom amount (minimum ₹100).</div>
                         </div>
                     </div>
                     

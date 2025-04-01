@@ -27,8 +27,8 @@ def send_notification_email(recipient_email, subject, message):
     return True
 
 def format_currency(amount):
-    """Format a number as USD currency"""
-    return "${:,.2f}".format(amount)
+    """Format a number as INR currency"""
+    return "₹{:,.2f}".format(amount)
 
 def format_date(date):
     """Format a date nicely"""

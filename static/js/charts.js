@@ -32,9 +32,9 @@ function initDonationProgressChart(campaignId, currentAmount, goalAmount) {
                                     label += ': ';
                                 }
                                 if (context.parsed !== null) {
-                                    label += new Intl.NumberFormat('en-US', {
+                                    label += new Intl.NumberFormat('en-IN', {
                                         style: 'currency',
-                                        currency: 'USD'
+                                        currency: 'INR'
                                     }).format(context.parsed);
                                 }
                                 return label;
@@ -73,7 +73,7 @@ function initDonationTimelineChart(chartId, labels, values) {
                         beginAtZero: true,
                         ticks: {
                             callback: function(value) {
-                                return '$' + value;
+                                return '₹' + value;
                             }
                         }
                     }
@@ -87,9 +87,9 @@ function initDonationTimelineChart(chartId, labels, values) {
                                     label += ': ';
                                 }
                                 if (context.parsed.y !== null) {
-                                    label += new Intl.NumberFormat('en-US', {
+                                    label += new Intl.NumberFormat('en-IN', {
                                         style: 'currency',
-                                        currency: 'USD'
+                                        currency: 'INR'
                                     }).format(context.parsed.y);
                                 }
                                 return label;

@@ -86,7 +86,7 @@
                             {% for campaign in user_campaigns %}
                             <tr>
                                 <td>{{ campaign.title }}</td>
-                                <td>${{ "%.2f"|format(campaign.goal_amount) }}</td>
+                                <td>₹{{ "%.2f"|format(campaign.goal_amount) }}</td>
                                 <td>
                                     <div class="progress" style="height: 8px;">
                                         <div class="progress-bar bg-success" role="progressbar" style="width: {{ campaign.progress() }}%;" 
@@ -141,7 +141,7 @@
                             {% for donation in user_donations %}
                             <tr>
                                 <td>{{ donation.campaign.title }}</td>
-                                <td>${{ "%.2f"|format(donation.amount) }}</td>
+                                <td>₹{{ "%.2f"|format(donation.amount) }}</td>
                                 <td>{{ donation.created_at.strftime('%b %d, %Y') }}</td>
                                 <td>
                                     <a href="{{ url_for('campaign_detail', id=donation.campaign.id) }}" class="btn btn-sm btn-outline-primary">View</a>

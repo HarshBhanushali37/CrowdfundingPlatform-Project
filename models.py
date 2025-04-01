@@ -82,19 +82,26 @@ class Donation(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     campaign_id = db.Column(db.Integer, db.ForeignKey('campaign.id'), nullable=False)
     
+    # Payment information
+    payment_id = db.Column(db.String(100), nullable=True)
+    order_id = db.Column(db.String(100), nullable=True)
+    payment_status = db.Column(db.String(20), default='pending')  # 'pending', 'completed', 'failed'
+    payment_method = db.Column(db.String(50), nullable=True)
+    
     def __repr__(self):
-        return f'<Donation ${self.amount} to {self.campaign_id}>'
+        return f'<Donation ₹{self.amount} to {self.campaign_id}>'
     
     def after_insert(self):
         """Update campaign's current amount after donation"""
-        self.campaign.current_amount += self.amount
-        db.session.commit()
+        if self.payment_status == 'completed':
+            self.campaign.current_amount += self.amount
+            db.session.commit()
 
 # Register event listener for donation insertion
 @db.event.listens_for(Donation, 'after_insert')
 def update_campaign_amount(mapper, connection, target):
     campaign = Campaign.query.get(target.campaign_id)
-    if campaign:
+    if campaign and target.payment_status == 'completed':
         campaign.current_amount += target.amount
         db.session.commit()
 

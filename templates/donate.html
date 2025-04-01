@@ -106,36 +106,23 @@
                     <hr>
                     
                     <div class="mb-4">
-                        <h4 class="mb-3">Payment Details (Demo)</h4>
+                        <h4 class="mb-3">Payment Processing</h4>
                         <div class="alert alert-info">
-                            <i class="fas fa-info-circle me-2"></i> This is a demo application. No actual payment will be processed.
+                            <i class="fas fa-info-circle me-2"></i> After clicking "Proceed to Payment", you'll be redirected to Razorpay's secure payment gateway.
                         </div>
                         
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label for="cardName" class="form-label">Name on Card</label>
-                                <input type="text" class="form-control" id="cardName" value="{{ current_user.get_full_name() }}" disabled>
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label for="cardNumber" class="form-label">Card Number</label>
-                                <input type="text" class="form-control" id="cardNumber" value="**** **** **** 1234" disabled>
-                            </div>
-                        </div>
-                        
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label for="expDate" class="form-label">Expiration Date</label>
-                                <input type="text" class="form-control" id="expDate" value="12/25" disabled>
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label for="cvv" class="form-label">CVV</label>
-                                <input type="text" class="form-control" id="cvv" value="***" disabled>
+                        <div class="card bg-light mb-3">
+                            <div class="card-body">
+                                <h5 class="card-title">Secure Payment</h5>
+                                <p class="mb-0"><i class="fas fa-lock text-success me-2"></i> Your payment information is securely processed by Razorpay</p>
+                                <p class="mb-0"><i class="fas fa-credit-card text-success me-2"></i> Multiple payment methods accepted</p>
+                                <p class="mb-0"><i class="fas fa-shield-alt text-success me-2"></i> Your financial details are never stored on our servers</p>
                             </div>
                         </div>
                     </div>
                     
                     <div class="d-grid">
-                        {{ form.submit(class="btn btn-success btn-lg") }}
+                        {{ form.submit(class="btn btn-success btn-lg", value="Proceed to Payment") }}
                     </div>
                 </form>
             </div>

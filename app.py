@@ -1,12 +1,18 @@
 import os
 import logging
 from datetime import datetime
-from flask import Flask, render_template, redirect, url_for, flash, request, abort
+from flask import Flask, render_template, redirect, url_for, flash, request, abort, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import DeclarativeBase
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from werkzeug.security import check_password_hash
 from urllib.parse import urlparse
+from razorpay_utils import (
+    create_razorpay_order, 
+    verify_razorpay_payment, 
+    generate_razorpay_checkout_data,
+    get_razorpay_client
+)
 
 # Configure logging
 logging.basicConfig(level=logging.DEBUG)
@@ -241,29 +247,129 @@ def donate(id):
     form = DonationForm()
     
     if form.validate_on_submit():
+        # Create Razorpay order
+        receipt = f"sahyog_donation_{current_user.id}_{campaign.id}_{int(datetime.utcnow().timestamp())}"
+        order_id = create_razorpay_order(form.amount.data, receipt=receipt)
+        
+        if not order_id:
+            # Fall back to direct donation if Razorpay is not configured
+            donation = Donation(
+                amount=form.amount.data,
+                comment=form.comment.data,
+                anonymous=form.anonymous.data,
+                user_id=current_user.id,
+                campaign_id=campaign.id,
+                created_at=datetime.utcnow(),
+                payment_status='completed'  # Mark as completed for direct donations
+            )
+            
+            db.session.add(donation)
+            db.session.commit()
+            
+            # Send notification email to campaign owner (mock)
+            send_notification_email(
+                campaign.user.email,
+                f"New donation to {campaign.title}",
+                f"Your campaign has received a new donation of ₹{donation.amount} from {'Anonymous' if donation.anonymous else current_user.username}."
+            )
+            
+            flash('Thank you for your generous donation!', 'success')
+            return redirect(url_for('campaign_detail', id=id))
+        
+        # Create a pending donation record
         donation = Donation(
             amount=form.amount.data,
             comment=form.comment.data,
             anonymous=form.anonymous.data,
             user_id=current_user.id,
             campaign_id=campaign.id,
-            created_at=datetime.utcnow()
+            created_at=datetime.utcnow(),
+            order_id=order_id,
+            payment_status='pending'
         )
         
         db.session.add(donation)
         db.session.commit()
         
-        # Send notification email to campaign owner (mock)
+        # Generate checkout data for Razorpay
+        razorpay_data = generate_razorpay_checkout_data(
+            order_id=order_id,
+            amount=form.amount.data,
+            user_name=current_user.get_full_name(),
+            campaign_title=campaign.title,
+            user_email=current_user.email
+        )
+        
+        return render_template(
+            'payment.html', 
+            form=form, 
+            campaign=campaign, 
+            donation=donation,
+            razorpay_data=razorpay_data
+        )
+    
+    return render_template('donate.html', form=form, campaign=campaign)
+
+@app.route('/payment/verify', methods=['POST'])
+@login_required
+def verify_payment():
+    payment_id = request.form.get('razorpay_payment_id')
+    order_id = request.form.get('razorpay_order_id')
+    signature = request.form.get('razorpay_signature')
+    
+    # Verify the payment
+    is_valid = verify_razorpay_payment(payment_id, order_id, signature)
+    
+    # Find the donation record
+    donation = Donation.query.filter_by(order_id=order_id).first()
+    
+    if not donation:
+        flash('Donation record not found.', 'danger')
+        return redirect(url_for('index'))
+    
+    if is_valid:
+        # Update donation status
+        donation.payment_id = payment_id
+        donation.payment_status = 'completed'
+        donation.payment_method = 'razorpay'
+        
+        # Update campaign amount
+        campaign = Campaign.query.get(donation.campaign_id)
+        if campaign:
+            campaign.current_amount += donation.amount
+        
+        db.session.commit()
+        
+        # Send notification email to campaign owner
         send_notification_email(
             campaign.user.email,
             f"New donation to {campaign.title}",
-            f"Your campaign has received a new donation of ${donation.amount} from {'Anonymous' if donation.anonymous else current_user.username}."
+            f"Your campaign has received a new donation of ₹{donation.amount} from {'Anonymous' if donation.anonymous else current_user.username}."
         )
         
-        flash('Thank you for your generous donation!', 'success')
-        return redirect(url_for('campaign_detail', id=id))
+        flash('Payment successful! Thank you for your donation.', 'success')
+    else:
+        # Payment verification failed
+        donation.payment_status = 'failed'
+        db.session.commit()
+        flash('Payment verification failed.', 'danger')
     
-    return render_template('donate.html', form=form, campaign=campaign)
+    return redirect(url_for('campaign_detail', id=donation.campaign_id))
+
+@app.route('/payment/cancel', methods=['POST'])
+@login_required
+def cancel_payment():
+    order_id = request.form.get('order_id')
+    
+    # Find the donation record
+    donation = Donation.query.filter_by(order_id=order_id).first()
+    
+    if donation:
+        donation.payment_status = 'failed'
+        db.session.commit()
+    
+    flash('Payment was cancelled.', 'warning')
+    return redirect(url_for('campaign_detail', id=donation.campaign_id))
 
 @app.route('/campaign/<int:id>/update', methods=['GET', 'POST'])
 @login_required

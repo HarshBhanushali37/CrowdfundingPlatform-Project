@@ -1,0 +1,164 @@
+{% extends "base.html" %}
+
+{% block title %}{{ current_user.username }}'s Profile - FoodAid{% endblock %}
+
+{% block content %}
+<div class="row">
+    <!-- Profile Information Section -->
+    <div class="col-md-4 mb-4">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h3 class="card-title mb-0">My Profile</h3>
+            </div>
+            <div class="card-body">
+                <div class="text-center mb-3">
+                    <i class="fas fa-user-circle fa-5x text-secondary"></i>
+                    <h4 class="mt-2">{{ current_user.get_full_name() }}</h4>
+                    <p class="text-muted">@{{ current_user.username }}</p>
+                </div>
+                
+                <div class="mb-3">
+                    <p><i class="fas fa-envelope me-2"></i> {{ current_user.email }}</p>
+                    <p><i class="fas fa-calendar-alt me-2"></i> Joined: {{ current_user.created_at.strftime('%B %d, %Y') }}</p>
+                    <p><i class="fas fa-hand-holding-heart me-2"></i> Total Donated: ${{ "%.2f"|format(current_user.get_total_donated()) }}</p>
+                </div>
+                
+                {% if current_user.bio %}
+                <div class="mb-3">
+                    <h5>About Me</h5>
+                    <p>{{ current_user.bio }}</p>
+                </div>
+                {% endif %}
+                
+                <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#editProfileForm" aria-expanded="false" aria-controls="editProfileForm">
+                    Edit Profile
+                </button>
+                
+                <div class="collapse mt-3" id="editProfileForm">
+                    <form method="POST" action="{{ url_for('profile') }}">
+                        {{ form.hidden_tag() }}
+                        
+                        <div class="mb-3">
+                            {{ form.first_name.label(class="form-label") }}
+                            {{ form.first_name(class="form-control") }}
+                        </div>
+                        
+                        <div class="mb-3">
+                            {{ form.last_name.label(class="form-label") }}
+                            {{ form.last_name(class="form-control") }}
+                        </div>
+                        
+                        <div class="mb-3">
+                            {{ form.bio.label(class="form-label") }}
+                            {{ form.bio(class="form-control", rows=4) }}
+                        </div>
+                        
+                        <div class="d-grid">
+                            {{ form.submit(class="btn btn-primary") }}
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- User's Campaigns and Donations -->
+    <div class="col-md-8">
+        <!-- My Campaigns Section -->
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+                <h3 class="card-title mb-0">My Campaigns</h3>
+            </div>
+            <div class="card-body">
+                {% if user_campaigns %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Campaign</th>
+                                <th>Goal</th>
+                                <th>Progress</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for campaign in user_campaigns %}
+                            <tr>
+                                <td>{{ campaign.title }}</td>
+                                <td>${{ "%.2f"|format(campaign.goal_amount) }}</td>
+                                <td>
+                                    <div class="progress" style="height: 8px;">
+                                        <div class="progress-bar bg-success" role="progressbar" style="width: {{ campaign.progress() }}%;" 
+                                             aria-valuenow="{{ campaign.progress() }}" aria-valuemin="0" aria-valuemax="100"></div>
+                                    </div>
+                                    <small>{{ campaign.progress() }}%</small>
+                                </td>
+                                <td>
+                                    {% if not campaign.is_approved %}
+                                    <span class="badge bg-warning">Pending</span>
+                                    {% elif campaign.is_ended() %}
+                                    <span class="badge bg-secondary">Ended</span>
+                                    {% else %}
+                                    <span class="badge bg-success">Active</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <a href="{{ url_for('campaign_detail', id=campaign.id) }}" class="btn btn-sm btn-outline-primary">View</a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="text-center py-4">
+                    <p class="mb-3">You haven't created any campaigns yet.</p>
+                    <a href="{{ url_for('create_campaign') }}" class="btn btn-primary">Start a Campaign</a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- My Donations Section -->
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h3 class="card-title mb-0">My Donations</h3>
+            </div>
+            <div class="card-body">
+                {% if user_donations %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Campaign</th>
+                                <th>Amount</th>
+                                <th>Date</th>
+                                <th>View</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for donation in user_donations %}
+                            <tr>
+                                <td>{{ donation.campaign.title }}</td>
+                                <td>${{ "%.2f"|format(donation.amount) }}</td>
+                                <td>{{ donation.created_at.strftime('%b %d, %Y') }}</td>
+                                <td>
+                                    <a href="{{ url_for('campaign_detail', id=donation.campaign.id) }}" class="btn btn-sm btn-outline-primary">View</a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="text-center py-4">
+                    <p class="mb-3">You haven't made any donations yet.</p>
+                    <a href="{{ url_for('campaigns') }}" class="btn btn-primary">Browse Campaigns</a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

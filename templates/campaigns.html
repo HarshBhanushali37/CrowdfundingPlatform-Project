@@ -1,0 +1,140 @@
+{% extends "base.html" %}
+
+{% block title %}Browse Campaigns - FoodAid{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-8">
+        <h1>Browse Food Aid Campaigns</h1>
+        <p class="lead">Discover food aid projects that need your support.</p>
+    </div>
+    <div class="col-md-4 text-md-end">
+        {% if current_user.is_authenticated %}
+        <a href="{{ url_for('create_campaign') }}" class="btn btn-primary">Start a Campaign</a>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Filters -->
+<div class="card mb-4">
+    <div class="card-body">
+        <form method="GET" action="{{ url_for('campaigns') }}" class="row g-3">
+            <div class="col-md-5">
+                <label for="category" class="form-label">Category</label>
+                <select name="category" id="category" class="form-select">
+                    <option value="">All Categories</option>
+                    {% for category in categories %}
+                    <option value="{{ category }}" {% if current_category == category %}selected{% endif %}>{{ category|capitalize }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-5">
+                <label for="sort" class="form-label">Sort By</label>
+                <select name="sort" id="sort" class="form-select">
+                    <option value="recent" {% if current_sort == 'recent' %}selected{% endif %}>Most Recent</option>
+                    <option value="goal" {% if current_sort == 'goal' %}selected{% endif %}>Highest Goal</option>
+                    <option value="ending_soon" {% if current_sort == 'ending_soon' %}selected{% endif %}>Ending Soon</option>
+                </select>
+            </div>
+            <div class="col-md-2 d-flex align-items-end">
+                <button type="submit" class="btn btn-primary w-100">Apply</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Campaign Listings -->
+{% if campaigns.items %}
+<div class="row">
+    {% for campaign in campaigns.items %}
+    <div class="col-md-6 col-lg-4 mb-4">
+        <div class="card h-100">
+            <div class="card-body">
+                <div class="d-flex align-items-center mb-3">
+                    <span class="badge bg-{{ 'success' if campaign.category == 'community' else 'info' if campaign.category == 'children' else 'warning' if campaign.category == 'emergency' else 'secondary' }} me-2">{{ campaign.category|capitalize }}</span>
+                    <small class="text-muted">{{ campaign.days_remaining() }} days left</small>
+                </div>
+                <h5 class="card-title">{{ campaign.title }}</h5>
+                <p class="card-text">{{ campaign.short_description }}</p>
+                
+                <!-- Progress bar -->
+                <div class="progress mb-3" style="height: 10px;">
+                    <div class="progress-bar bg-success" role="progressbar" style="width: {{ campaign.progress() }}%;" 
+                         aria-valuenow="{{ campaign.progress() }}" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+                <div class="d-flex justify-content-between small mb-3">
+                    <span>${{ "%.2f"|format(campaign.current_amount) }} raised</span>
+                    <span>{{ campaign.progress() }}% of ${{ "%.2f"|format(campaign.goal_amount) }}</span>
+                </div>
+                
+                <div class="text-center">
+                    <a href="{{ url_for('campaign_detail', id=campaign.id) }}" class="btn btn-primary">View Campaign</a>
+                </div>
+            </div>
+            <div class="card-footer text-muted">
+                <div class="d-flex justify-content-between">
+                    <small>Location: {{ campaign.location }}</small>
+                    <small>{{ campaign.donor_count() }} donors</small>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- Pagination -->
+<nav aria-label="Campaign pagination">
+    <ul class="pagination justify-content-center">
+        {% if campaigns.has_prev %}
+        <li class="page-item">
+            <a class="page-link" href="{{ url_for('campaigns', page=campaigns.prev_num, category=current_category, sort=current_sort) }}">Previous</a>
+        </li>
+        {% else %}
+        <li class="page-item disabled">
+            <a class="page-link" href="#" tabindex="-1">Previous</a>
+        </li>
+        {% endif %}
+        
+        {% for page_num in campaigns.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}
+            {% if page_num %}
+                {% if page_num == campaigns.page %}
+                <li class="page-item active">
+                    <a class="page-link" href="{{ url_for('campaigns', page=page_num, category=current_category, sort=current_sort) }}">{{ page_num }}</a>
+                </li>
+                {% else %}
+                <li class="page-item">
+                    <a class="page-link" href="{{ url_for('campaigns', page=page_num, category=current_category, sort=current_sort) }}">{{ page_num }}</a>
+                </li>
+                {% endif %}
+            {% else %}
+                <li class="page-item disabled">
+                    <a class="page-link" href="#">...</a>
+                </li>
+            {% endif %}
+        {% endfor %}
+        
+        {% if campaigns.has_next %}
+        <li class="page-item">
+            <a class="page-link" href="{{ url_for('campaigns', page=campaigns.next_num, category=current_category, sort=current_sort) }}">Next</a>
+        </li>
+        {% else %}
+        <li class="page-item disabled">
+            <a class="page-link" href="#" tabindex="-1">Next</a>
+        </li>
+        {% endif %}
+    </ul>
+</nav>
+
+{% else %}
+<div class="alert alert-info text-center py-5">
+    <h4>No campaigns found</h4>
+    <p>No campaigns match your current filters. Try different filters or create your own campaign.</p>
+    <div class="mt-3">
+        <a href="{{ url_for('campaigns') }}" class="btn btn-outline-primary me-2">Reset Filters</a>
+        {% if current_user.is_authenticated %}
+        <a href="{{ url_for('create_campaign') }}" class="btn btn-primary">Start a Campaign</a>
+        {% endif %}
+    </div>
+</div>
+{% endif %}
+{% endblock %}

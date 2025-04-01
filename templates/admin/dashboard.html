@@ -1,0 +1,220 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard - FoodAid{% endblock %}
+
+{% block content %}
+<h1 class="mb-4">Admin Dashboard</h1>
+
+<div class="row mb-4">
+    <!-- Overview Cards -->
+    <div class="col-md-3 mb-4">
+        <div class="card bg-primary text-white h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="card-title">Total Campaigns</h6>
+                        <h2 class="mb-0">{{ total_campaigns }}</h2>
+                    </div>
+                    <i class="fas fa-seedling fa-3x opacity-50"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-4">
+        <div class="card bg-warning text-white h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="card-title">Pending Approval</h6>
+                        <h2 class="mb-0">{{ pending_campaigns }}</h2>
+                    </div>
+                    <i class="fas fa-clock fa-3x opacity-50"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-4">
+        <div class="card bg-success text-white h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="card-title">Total Donations</h6>
+                        <h2 class="mb-0">${{ "%.2f"|format(total_donations) }}</h2>
+                    </div>
+                    <i class="fas fa-dollar-sign fa-3x opacity-50"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-4">
+        <div class="card bg-info text-white h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="card-title">Total Users</h6>
+                        <h2 class="mb-0">{{ total_users }}</h2>
+                    </div>
+                    <i class="fas fa-users fa-3x opacity-50"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Campaigns Pending Approval -->
+    <div class="col-lg-6 mb-4">
+        <div class="card h-100">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">Campaigns Pending Approval</h4>
+            </div>
+            <div class="card-body">
+                {% if pending_approval %}
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead>
+                            <tr>
+                                <th>Campaign</th>
+                                <th>Created By</th>
+                                <th>Date</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for campaign in pending_approval %}
+                            <tr>
+                                <td>
+                                    <a href="{{ url_for('campaign_detail', id=campaign.id) }}">{{ campaign.title }}</a>
+                                </td>
+                                <td>{{ campaign.user.username }}</td>
+                                <td>{{ campaign.created_at.strftime('%b %d, %Y') }}</td>
+                                <td>
+                                    <div class="btn-group" role="group">
+                                        <form method="POST" action="{{ url_for('approve_campaign', id=campaign.id) }}" class="d-inline">
+                                            <button type="submit" class="btn btn-sm btn-success me-1">Approve</button>
+                                        </form>
+                                        <form method="POST" action="{{ url_for('reject_campaign', id=campaign.id) }}" class="d-inline" onsubmit="return confirm('Are you sure you want to reject this campaign?');">
+                                            <button type="submit" class="btn btn-sm btn-danger">Reject</button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="alert alert-info mb-0">
+                    <i class="fas fa-info-circle me-2"></i> No campaigns pending approval.
+                </div>
+                {% endif %}
+            </div>
+            <div class="card-footer">
+                <a href="{{ url_for('admin_campaigns') }}" class="btn btn-primary">View All Campaigns</a>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Recent Donations -->
+    <div class="col-lg-6 mb-4">
+        <div class="card h-100">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">Recent Donations</h4>
+            </div>
+            <div class="card-body">
+                {% if recent_donations %}
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead>
+                            <tr>
+                                <th>Campaign</th>
+                                <th>Donor</th>
+                                <th>Amount</th>
+                                <th>Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for donation in recent_donations %}
+                            <tr>
+                                <td>
+                                    <a href="{{ url_for('campaign_detail', id=donation.campaign.id) }}">{{ donation.campaign.title }}</a>
+                                </td>
+                                <td>
+                                    {% if donation.anonymous %}
+                                    Anonymous
+                                    {% else %}
+                                    {{ donation.user.username }}
+                                    {% endif %}
+                                </td>
+                                <td>${{ "%.2f"|format(donation.amount) }}</td>
+                                <td>{{ donation.created_at.strftime('%b %d, %Y') }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="alert alert-info mb-0">
+                    <i class="fas fa-info-circle me-2"></i> No donations to display.
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Donation Analytics Chart -->
+<div class="row mt-2">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">Donation Analytics</h4>
+            </div>
+            <div class="card-body">
+                <canvas id="donationsChart" height="100"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/charts.js') }}"></script>
+<script>
+    // Sample data for demonstration purposes
+    const ctx = document.getElementById('donationsChart').getContext('2d');
+    const donationsChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+            datasets: [{
+                label: 'Donations ($)',
+                data: [1200, 1900, 3000, 5000, 2000, 3000, 7000, 5500, 4000, 3700, 4500, {{ total_donations }}],
+                backgroundColor: 'rgba(40, 167, 69, 0.2)',
+                borderColor: 'rgba(40, 167, 69, 1)',
+                borderWidth: 2,
+                tension: 0.4
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        callback: function(value) {
+                            return '$' + value;
+                        }
+                    }
+                }
+            },
+            plugins: {
+                title: {
+                    display: true,
+                    text: 'Monthly Donations (Current Year)'
+                }
+            }
+        }
+    });
+</script>
+{% endblock %}
